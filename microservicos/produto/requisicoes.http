@@ -1,0 +1,12 @@
+### Criar produto
+POST http://localhost:3001/produtos
+Content-Type: application/json
+
+{
+  "nome": "teclado",
+  "preco": 500
+}
+
+
+### Listar produtos
+GET http://localhost:3001/produtos
