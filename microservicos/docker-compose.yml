@@ -1,6 +1,6 @@
 services:
-  produto:
-    build: ./produto
+  produtos:
+    build: ./produtos
     ports:
       - "3001:3001"
     environment:
@@ -9,14 +9,23 @@ services:
       postgres:
         condition: service_healthy
 
-  pedido:
-    build: ./pedido
+  pedidos:
+    build: ./pedidos
     ports:
       - "3002:3002"
     environment:
-      PRODUTOS_URL: http://produto:3001
+      PRODUTOS_URL: http://produtos:3001
     depends_on:
       - produto
+
+  cliente:
+    build: ./clientes
+    ports:
+      - "3003:3003"
+    environment:
+      PEDIDOS_URL: http://pedidos:3002
+    depends_on:
+      - pedidos
 
   postgres:
     image: postgres:16-alpine

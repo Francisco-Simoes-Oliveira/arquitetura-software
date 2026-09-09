@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-const db = require("./db");
+const db = require("./pedidos_db");
 
 const app = express();
 
