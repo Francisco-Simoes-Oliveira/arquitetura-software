@@ -1,0 +1,17 @@
+### Listar clientes
+GET http://localhost:3003/clientes
+
+### Criar cliente
+POST http://localhost:3003/clientes
+Content-Type: application/json
+
+{
+ "id": 1,
+ "nome": "João",
+ "sobrenome": "Silva",
+ "telefone": "46999999999",
+ "email": "joao@email.com"
+ }
+
+### Buscar cliente por ID
+GET http://localhost:3003/clientes/1
