@@ -11,9 +11,6 @@ app.use(express.json());
 
 const pedidos = [];
 
-/*app.get("/pedidos", (req, res) => {
-    res.json(pedidos);
-});*/
 
 app.get("/pedidos", async (req, res) => {
     try {
@@ -29,47 +26,6 @@ app.get("/pedidos", async (req, res) => {
     }
 });
 
-/*app.post("/pedidos", async (req, res) => {
-    const { produtoId, quantidade } = req.body;
-
-    if (!produtoId || !quantidade || quantidade <= 0) {
-        return res.status(400).json({
-            erro: "produtoId e quantidade válida são obrigatórios"
-        });
-    }
-
-    try {
-        const resposta = await axios.get(
-            `${PRODUTOS_URL}/produtos/${produtoId}`,
-            {
-                timeout: 3000
-            }
-        );
-
-        const produto = resposta.data;
-
-        const pedido = {
-            id: pedidos.length + 1,
-            produto,
-            quantidade,
-            total: produto.preco * quantidade
-        };
-
-        pedidos.push(pedido);
-
-        res.status(201).json(pedido);
-    } catch (erro) {
-        if (erro.response?.status === 404) {
-            return res.status(400).json({
-                erro: "Produto não encontrado"
-            });
-        }
-
-        return res.status(503).json({
-            erro: "Serviço de Produtos indisponível"
-        });
-    }
-});*/
 
 app.post("/pedidos", async (req, res) => {
     const { produtoId, quantidade } = req.body;
@@ -130,19 +86,7 @@ app.post("/pedidos", async (req, res) => {
     }
 });
 
-/*app.get("/pedidos/:id", (req, res) => {
-    const pedido = pedidos.find(
-        p => p.id === Number(req.params.id)
-    );
 
-    if (!pedido) {
-        return res.status(404).json({
-            erro: "Pedido não encontrado"
-        });
-    }
-
-    res.json(pedido);
-});*/
 
 app.get("/pedidos/:id", async (req, res) => {
     try {
@@ -174,6 +118,7 @@ async function criarTabela() {
         CREATE TABLE IF NOT EXISTS pedidos (
         id SERIAL PRIMARY KEY,
         produto_id INTEGER NOT NULL,
+        cliente_id INTEGER NOT NULL,
         nome_produto VARCHAR(100) NOT NULL,
         preco_unitario NUMERIC(10, 2) NOT NULL,
         quantidade INTEGER NOT NULL,
