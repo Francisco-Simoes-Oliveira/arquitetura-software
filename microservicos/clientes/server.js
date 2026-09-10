@@ -52,6 +52,7 @@ app.get("/clientes/:id", async (req, res) => {
 
     res.json(cliente);
   } catch (erro) {
+    
     res.status(500).json({
       erro: "Erro ao buscar cliente"
     });
@@ -63,7 +64,7 @@ app.post("/clientes", async (req, res) => {
 
   if (!nome || !sobrenome || !email) {
     return res.status(400).json({
-      erro: "Nome e preço válido são obrigatórios"
+      erro: "Nome, sobrenome e email são obrigatórios"
     });
   }
 
@@ -77,6 +78,11 @@ app.post("/clientes", async (req, res) => {
 
     res.status(201).json(resultado.rows[0]);
   } catch (erro) {
+    if (erro.code === "23505") {
+      return res.status(409).json({
+        erro: "Email já cadastrado"
+      });
+    }
     res.status(500).json({
       erro: "Erro ao criar cliente"
     });
