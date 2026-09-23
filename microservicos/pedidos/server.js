@@ -6,6 +6,7 @@ const app = express();
 
 const PRODUTOS_URL =
     process.env.PRODUTOS_URL || "http://localhost:3001";
+const CLIENTES_URL = process.env.CLIENTES_URL || "http://localhost:3003";
 
 app.use(express.json());
 
@@ -28,11 +29,11 @@ app.get("/pedidos", async (req, res) => {
 
 
 app.post("/pedidos", async (req, res) => {
-    const { produtoId, quantidade } = req.body;
+    const { produtoId, quantidade, clienteId } = req.body;
 
-    if (!produtoId || !quantidade || quantidade <= 0) {
+    if (!produtoId || !quantidade || quantidade <= 0 || !clienteId) {
         return res.status(400).json({
-            erro: "produtoId e quantidade válida são obrigatórios"
+            erro: "produtoId, quantidade e clienteId são obrigatórios"
         });
     }
 
@@ -43,24 +44,33 @@ app.post("/pedidos", async (req, res) => {
                 timeout: 3000
             }
         );
+        const cliente = await axios.get(
+            `${CLIENTES_URL}/clientes/${clienteId}`,
+            {
+                timeout: 3000
+            }
+        );
+        if (!cliente.data) {
+            return res.status(400).json({
+                erro: "Cliente não encontrado"
+            });
+        }
 
         const produto = resposta.data;
         const total = produto.preco * quantidade;
 
         const resultado = await db.query(
             `INSERT INTO pedidos (
-        produto_id,
-        nome_produto,
-        preco_unitario,
+        cliente,
+        produto,
         quantidade,
         total
       )
-      VALUES ($1, $2, $3, $4, $5)
+        VALUES ($1, $2, $3, $4)
       RETURNING *`,
             [
-                produto.id,
-                produto.nome,
-                produto.preco,
+                cliente.data,
+                produto,
                 quantidade,
                 total
             ]
@@ -117,10 +127,8 @@ async function criarTabela() {
     await db.query(`
         CREATE TABLE IF NOT EXISTS pedidos (
         id SERIAL PRIMARY KEY,
-        produto_id INTEGER NOT NULL,
-        cliente_id INTEGER NOT NULL,
-        nome_produto VARCHAR(100) NOT NULL,
-        preco_unitario NUMERIC(10, 2) NOT NULL,
+        cliente JSONB NOT NULL,
+        produto JSONB NOT NULL,
         quantidade INTEGER NOT NULL,
         total NUMERIC(10, 2) NOT NULL
         )

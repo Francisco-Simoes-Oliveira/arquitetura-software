@@ -7,7 +7,8 @@ Content-Type: application/json
 
 {
   "produtoId": 1,
-  "quantidade": 2
+  "quantidade": 2,
+  "clienteId": 1
 }
 
 ### Buscar pedido por ID

@@ -3,8 +3,8 @@ POST http://localhost:3001/produtos
 Content-Type: application/json
 
 {
-  "nome": "teclado",
-  "preco": 500
+  "nome": "mause",
+  "preco": 50.00
 }
 
 
