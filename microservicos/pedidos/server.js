@@ -1,32 +1,46 @@
+require("dotenv").config();
+
 const express = require("express");
 const axios = require("axios");
-const db = require("./pedidos_db");
+const mongoose = require("mongoose");
+const connectDB = require("./pedidos_db");
 
 const app = express();
 
 const PRODUTOS_URL =
     process.env.PRODUTOS_URL || "http://localhost:3001";
+
 const CLIENTES_URL = process.env.CLIENTES_URL || "http://localhost:3003";
 
 app.use(express.json());
 
-const pedidos = [];
+connectDB();
 
+const pedidoSchema = new mongoose.Schema({
+    produto_id: Number,
+    nome_produto: String,
+    preco_unitario: Number,
+    quantidade: Number,
+    total: Number
+});
+
+const Pedido = mongoose.model(
+    "Pedido",
+    pedidoSchema
+);
 
 app.get("/pedidos", async (req, res) => {
     try {
-        const resultado = await db.query(
-            "SELECT * FROM pedidos ORDER BY id"
-        );
+        const resultado = await Pedido.find()
+            .sort({ _id: 1 });
 
-        res.json(resultado.rows);
+        res.json(resultado);
     } catch (erro) {
         res.status(500).json({
             erro: "Erro ao buscar pedidos"
         });
     }
 });
-
 
 app.post("/pedidos", async (req, res) => {
     const { produtoId, quantidade, clienteId } = req.body;
